@@ -1,0 +1,100 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <title>聊天室1.0</title>
+    <style type="text/css">
+        body{
+            background-color: beige;
+            margin:0;
+        }
+        ul,li{
+            list-style: none;
+            margin: 0;
+            padding:0;
+        }
+
+        .chat{
+            width: 800px;
+            margin: 0 auto;
+            overflow: hidden;
+            padding-left: 50px;
+            /*background-color: aquamarine;*/
+
+        }
+        .list{
+            width:200px;
+            height:400px;
+            background-color: lightgreen;
+            float: left;
+        }
+        ul h2{
+            text-align: center;
+        }
+        .myself{
+            width: 200px;
+            height: 400px;
+            float: left;
+            background-color: orangered;
+        }
+        .box{
+            overflow: hidden;
+            width: 500px;
+        }
+    </style>
+
+</head>
+<body>
+    <div class="chat">
+        <h2>欢迎您, 当前在线人数<span>1</span></h2>
+        <div class="box">
+            <ul class="list">
+                <h2>别人</h2>
+            </ul>
+            <ul class="myself">
+                <h2>2货</h2>
+            </ul>
+        </div>
+        <form action="">
+            <input type="text" id="text">
+            <input type="button" value="发送" id="btn"/>
+        </form>
+    </div>
+
+    <script src="../../socket.io/socket.io.js"></script>
+    <script>
+        var socket = io('http://10.80.16.69:3000');
+        var info=document.querySelector("#text");
+        var btn=document.querySelector("#btn");
+        var list=document.querySelector(".list");
+        var myself=document.querySelector(".myself");
+        var span=document.querySelector("span");
+
+        btn.onclick=function (e) {
+            var ev=window.event||e;
+            ev.preventDefault();
+            var message=info.value;
+            var li=document.createElement("li");
+            li.innerHTML=message;
+            myself.appendChild(li);
+            info.value="";
+            info.focus();
+            socket.emit('text', { info: message });
+
+        }
+        socket.on('news', function (data) {
+            var num=data.num;
+            var name=data.name;
+            var text=data.text;
+//                for (var i=0;i<text.length;i++){
+            var li2=document.createElement("li");
+            li2.innerHTML=text;
+            list.appendChild(li2);
+//                }
+            span.innerHTML=num+name;
+            console.log(text);
+
+        });
+    </script>
+</body>
+</html>
